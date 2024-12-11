@@ -46,7 +46,7 @@ public class Session implements Runnable {
                     case CommandType.MESSAGE -> sessionManager.sendAll(name + ": " + command.message());
                     case CommandType.CHANGE -> {
                         name = command.message();
-                        output.writeUTF("이름 변경 완료");
+//                        output.writeUTF("이름 변경 완료");
                     }
                     default -> log("message : " + received);
                 }

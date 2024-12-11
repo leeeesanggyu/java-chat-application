@@ -1,6 +1,5 @@
 package my.client;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -16,29 +15,21 @@ public class Client {
         log("클라이언트 시작");
 
         try(Socket socket = new Socket("localhost", PORT);
-            DataInputStream input = new DataInputStream(socket.getInputStream());
             DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
 
             log("소켓 연결: " + socket);
             Scanner scanner = new Scanner(System.in);
             onboarding(scanner, output);
-            
-            while (true) {
-                System.out.println("전송 문자: ");
-                String toSend = scanner.nextLine();
 
-                output.writeUTF(toSend);
-//                log("client -> server: " + toSend);
+            Thread readThread = new Thread(new ReadHandler(socket), "read");
+            readThread.start();
 
-                if (toSend.equals("exit")) {
-                    break;
-                }
+            Thread writeThread = new Thread(new WriteHandler(socket), "write");
+            writeThread.start();
 
-                String received = input.readUTF();
-//                log("client <- server: " + received);
-                log(received);
-            }
-        } catch (IOException e) {
+            readThread.join();
+            writeThread.join();
+        } catch (IOException | InterruptedException e) {
             log(e);
         }
     }
