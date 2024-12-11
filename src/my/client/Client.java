@@ -28,14 +28,15 @@ public class Client {
                 String toSend = scanner.nextLine();
 
                 output.writeUTF(toSend);
-                log("client -> server: " + toSend);
+//                log("client -> server: " + toSend);
 
                 if (toSend.equals("exit")) {
                     break;
                 }
 
                 String received = input.readUTF();
-                log("client <- server: " + received);
+//                log("client <- server: " + received);
+                log(received);
             }
         } catch (IOException e) {
             log(e);
