@@ -38,13 +38,13 @@ public class Session implements Runnable {
                 }
 
                 switch (command.command()) {
-                    case CommandType.JOIN -> name = command.message();
+                    case CommandType.JOIN -> changeName(command.message());
+                    case CommandType.CHANGE -> changeName(command.message());
                     case CommandType.USERS -> {
                         List<String> sessionNames = sessionManager.getNames();
                         output.writeUTF(String.valueOf(sessionNames));
                     }
                     case CommandType.MESSAGE -> sessionManager.sendAll(name + ": " + command.message());
-                    case CommandType.CHANGE -> name = command.message();
                     default -> log("message : " + received);
                 }
             }
@@ -59,6 +59,10 @@ public class Session implements Runnable {
 
     public String getName() {
         return name;
+    }
+
+    public void changeName(String newName) {
+        this.name = newName;
     }
 
     public synchronized void close() {
