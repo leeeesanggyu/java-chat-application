@@ -9,9 +9,9 @@ import java.util.List;
 import static util.Logger.log;
 import static util.SocketCloseUtil.closeAll;
 
-public class Session implements Runnable {
+class Session implements Runnable {
 
-    public String name = "unknown";
+    String name = "unknown";
     private boolean closed = false;
 
     private final Socket socket;
@@ -19,7 +19,7 @@ public class Session implements Runnable {
     private final DataOutputStream output;
     private final SessionManager sessionManager;
 
-    public Session(Socket socket, SessionManager sessionManager) throws IOException {
+    Session(Socket socket, SessionManager sessionManager) throws IOException {
         this.socket = socket;
         this.input = new DataInputStream(socket.getInputStream());
         this.output = new DataOutputStream(socket.getOutputStream());
@@ -57,32 +57,32 @@ public class Session implements Runnable {
         }
     }
 
+    void send(String message) {
+        try {
+            output.writeUTF(message);
+        } catch (IOException e) {
+            log(e);
+        }
+    }
+
     private void sendAll(String name) {
         sessionManager.sendAll(name);
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public void changeName(String newName) {
+    private void changeName(String newName) {
         this.name = newName;
     }
 
-    public synchronized void close() {
+    synchronized void close() {
         if (closed) {
             return;
         }
         closeAll(socket, input, output);
         closed = true;
         log("연결 종료: " + socket);
-    }
-
-    public void send(String message) {
-        try {
-            output.writeUTF(message);
-        } catch (IOException e) {
-            log(e);
-        }
     }
 }

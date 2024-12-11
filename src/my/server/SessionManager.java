@@ -3,32 +3,32 @@ package my.server;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SessionManager {
+class SessionManager {
 
     private List<Session> sessions = new ArrayList<>();
 
-    public synchronized void add(Session session) {
+    synchronized void add(Session session) {
         sessions.add(session);
     }
 
-    public synchronized void remove(Session session) {
+    synchronized void remove(Session session) {
         sessions.remove(session);
     }
 
-    public synchronized void closeAll() {
+    synchronized void closeAll() {
         for (Session session: sessions) {
             session.close();
         }
         sessions.clear();
     }
 
-    public synchronized void sendAll(String message) {
+    synchronized void sendAll(String message) {
         for (Session session: sessions) {
             session.send(message);
         }
     }
 
-    public synchronized List<String> getNames() {
+    synchronized List<String> getNames() {
         return sessions.stream()
                 .map(Session::getName)
                 .toList();

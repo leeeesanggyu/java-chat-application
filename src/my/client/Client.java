@@ -8,7 +8,7 @@ import java.net.Socket;
 import static util.Logger.log;
 import static util.SocketCloseUtil.closeAll;
 
-public class Client {
+class Client {
 
     private final String host;
     private final int port;
@@ -21,12 +21,12 @@ public class Client {
     private WriteHandler writeHandler;
     private boolean closed = false;
 
-    public Client(String host, int port) {
+    Client(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
-    public void start() throws IOException {
+    void start() throws IOException {
         log("클라이언트 시작");
         socket = new Socket(host, port);
         input = new DataInputStream(socket.getInputStream());
@@ -42,7 +42,7 @@ public class Client {
         writeThread.start();
     }
 
-    public synchronized void close() {
+    synchronized void close() {
         if (closed) {
             return;
         }

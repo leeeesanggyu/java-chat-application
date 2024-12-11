@@ -6,18 +6,18 @@ import java.net.Socket;
 
 import static util.Logger.log;
 
-public class Server {
+class Server {
 
     private final int port;
 
     private SessionManager sessionManager;
     private ServerSocket serverSocket;
 
-    public Server(int port) {
+    Server(int port) {
         this.port = port;
     }
 
-    public void start() throws IOException {
+    void start() throws IOException {
         log("서버 시작");
         sessionManager = new SessionManager();
         serverSocket = new ServerSocket(port);
@@ -39,7 +39,7 @@ public class Server {
 
     }
 
-    private static class ShutdownHook implements Runnable {
+    private class ShutdownHook implements Runnable {
 
         private final ServerSocket serverSocket;
         private final SessionManager sessionManager;
