@@ -5,7 +5,9 @@ public enum CommandType {
     MESSAGE("/message"),
     CHANGE("/change"),
     USERS("/users"),
-    EXIT("/exit");
+    EXIT("/exit"),
+    UNKNOWN(""),
+    ;
 
     private final String input;
 
@@ -23,6 +25,6 @@ public enum CommandType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown command: " + input);
+        return UNKNOWN;
     }
 }

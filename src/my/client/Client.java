@@ -1,42 +1,57 @@
 package my.client;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Scanner;
 
 import static util.Logger.log;
+import static util.SocketCloseUtil.closeAll;
 
 public class Client {
 
-    private static final int PORT = 12345;
+    private final String host;
+    private final int port;
 
-    public static void main(String[] args) {
-        log("클라이언트 시작");
+    private Socket socket;
+    private DataInputStream input;
+    private DataOutputStream output;
 
-        try(Socket socket = new Socket("localhost", PORT);
-            DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
+    private ReadHandler readHandler;
+    private WriteHandler writeHandler;
+    private boolean closed = false;
 
-            log("소켓 연결: " + socket);
-            Scanner scanner = new Scanner(System.in);
-            onboarding(scanner, output);
-
-            Thread readThread = new Thread(new ReadHandler(socket), "read");
-            readThread.start();
-
-            Thread writeThread = new Thread(new WriteHandler(socket), "write");
-            writeThread.start();
-
-            readThread.join();
-            writeThread.join();
-        } catch (IOException | InterruptedException e) {
-            log(e);
-        }
+    public Client(String host, int port) {
+        this.host = host;
+        this.port = port;
     }
 
-    private static void onboarding(Scanner scanner, DataOutputStream output) throws IOException {
-        System.out.println("사용자의 이름을 입력하세요. 명령어: /join|{name}");
-        String nameCommand = scanner.nextLine();
-        output.writeUTF(nameCommand);
+    public void start() throws IOException {
+        log("클라이언트 시작");
+        socket = new Socket(host, port);
+        input = new DataInputStream(socket.getInputStream());
+        output = new DataOutputStream(socket.getOutputStream());
+
+        readHandler = new ReadHandler(this, input);
+        writeHandler = new WriteHandler(this, output);
+
+        Thread readThread = new Thread(readHandler, "readHandler");
+        readThread.start();
+
+        Thread writeThread = new Thread(writeHandler, "writeHandler");
+        writeThread.start();
+    }
+
+    public synchronized void close() {
+        if (closed) {
+            return;
+        }
+
+        writeHandler.close();
+        readHandler.close();
+        closeAll(socket, input, output);
+        closed = true;
+        log("연결 종료: " + socket);
+
     }
 }

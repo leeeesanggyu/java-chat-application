@@ -2,19 +2,18 @@ package my.client;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 import static util.Logger.log;
-import static util.SocketCloseUtil.closeAll;
 
 public class ReadHandler implements Runnable {
 
-    private final Socket socket;
+    private final Client client;
     private final DataInputStream input;
+    private boolean closed;
 
-    public ReadHandler(Socket socket) throws IOException {
-        this.socket = socket;
-        this.input = new DataInputStream(socket.getInputStream());
+    public ReadHandler(Client client, DataInputStream input) throws IOException {
+        this.client = client;
+        this.input = input;
     }
 
     @Override
@@ -22,12 +21,21 @@ public class ReadHandler implements Runnable {
         try {
             while (true) {
                 String received = input.readUTF();
-                log(received);
+                System.out.println(received);
             }
         } catch (IOException e) {
-            closeAll(socket, input, null);
+            log(e);
         } finally {
-            closeAll(socket, input, null);
+            client.close();
         }
+    }
+
+    public synchronized void close() {
+        if (closed) {
+            return;
+        }
+
+        closed = true;
+        log("ReadHandler 종료");
     }
 }
