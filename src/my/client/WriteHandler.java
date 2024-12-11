@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
+import static util.SocketCloseUtil.closeAll;
+
 public class WriteHandler implements Runnable {
 
     private final Socket socket;
@@ -29,7 +31,9 @@ public class WriteHandler implements Runnable {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            closeAll(socket, null, output);
+        } finally {
+            closeAll(socket, null, output);
         }
     }
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import static util.Logger.log;
+import static util.SocketCloseUtil.closeAll;
 
 public class ReadHandler implements Runnable {
 
@@ -18,13 +19,15 @@ public class ReadHandler implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            try {
+        try {
+            while (true) {
                 String received = input.readUTF();
                 log(received);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
+        } catch (IOException e) {
+            closeAll(socket, input, null);
+        } finally {
+            closeAll(socket, input, null);
         }
     }
 }
