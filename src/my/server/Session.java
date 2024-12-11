@@ -42,9 +42,9 @@ public class Session implements Runnable {
                     case CommandType.CHANGE -> changeName(command.message());
                     case CommandType.USERS -> {
                         List<String> sessionNames = sessionManager.getNames();
-                        output.writeUTF(String.valueOf(sessionNames));
+                        send(String.valueOf(sessionNames));
                     }
-                    case CommandType.MESSAGE -> sessionManager.sendAll(name + ": " + command.message());
+                    case CommandType.MESSAGE -> sendAll(name + ": " + command.message());
                     default -> log("message : " + received);
                 }
             }
@@ -52,9 +52,13 @@ public class Session implements Runnable {
             log(e);
         } finally {
             sessionManager.remove(this);
-            sessionManager.sendAll(name + "님이 퇴장했습니다.");
+            sendAll(name + "님이 퇴장했습니다.");
             close();
         }
+    }
+
+    private void sendAll(String name) {
+        sessionManager.sendAll(name);
     }
 
     public String getName() {
