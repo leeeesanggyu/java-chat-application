@@ -21,6 +21,7 @@ class CommandManagerV2 implements CommandManager {
 
     @Override
     public void execute(Message message, Session session) throws IOException {
-        commands.get(message.command()).execute(message, session);
+        commands.getOrDefault(message.command(), new UnknownCommand())
+                .execute(message, session);
     }
 }
