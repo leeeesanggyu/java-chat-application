@@ -9,6 +9,7 @@ import java.util.Map;
 class CommandManagerV2 implements CommandManager {
 
     private final Map<CommandType, Command> commands = new HashMap<>();
+    private final UnknownCommand unknownCommand = new UnknownCommand();
 
     public CommandManagerV2(SessionManager sessionManager) {
         commands.put(CommandType.EXIT, new ExitCommand());
@@ -16,12 +17,12 @@ class CommandManagerV2 implements CommandManager {
         commands.put(CommandType.CHANGE, new ChangeCommand());
         commands.put(CommandType.USERS, new UsersCommand(sessionManager));
         commands.put(CommandType.MESSAGE, new MessageCommand());
-        commands.put(CommandType.UNKNOWN, new UnknownCommand());
+        commands.put(CommandType.UNKNOWN, unknownCommand);
     }
 
     @Override
     public void execute(Message message, Session session) throws IOException {
-        commands.getOrDefault(message.command(), new UnknownCommand())
+        commands.getOrDefault(message.command(), unknownCommand)
                 .execute(message, session);
     }
 }

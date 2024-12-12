@@ -1,6 +1,7 @@
 package my.server;
 
-public record Message(CommandType command,
+public record Message(String input,
+                      CommandType command,
                       String message) {
 
     private static final String DELIMITER = "\\|";
@@ -13,6 +14,6 @@ public record Message(CommandType command,
         if (commandMessage.length > 1) {
             message = commandMessage[1];
         }
-        return new Message(command, message);
+        return new Message(input, command, message);
     }
 }
