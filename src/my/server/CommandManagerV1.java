@@ -17,7 +17,10 @@ class CommandManagerV1 implements CommandManager {
     public void execute(Command command, Session session) throws IOException {
         switch (command.command()) {
             case EXIT -> throw new IOException();
-            case CommandType.JOIN -> session.changeName(command.message());
+            case CommandType.JOIN -> {
+                session.changeName(command.message());
+                session.sendAll(session.getName() + "님이 입장했습니다.");
+            }
             case CommandType.CHANGE -> session.changeName(command.message());
             case CommandType.USERS -> {
                 List<String> sessionNames = sessionManager.getNames();
