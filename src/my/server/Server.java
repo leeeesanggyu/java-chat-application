@@ -9,24 +9,27 @@ import static util.Logger.log;
 class Server {
 
     private final int port;
+    private final CommandManager commandManager;
+    private final SessionManager sessionManager;
 
-    private SessionManager sessionManager;
     private ServerSocket serverSocket;
-    private CommandManager commandManager;
 
-    Server(int port) {
+    Server(int port, CommandManager commandManager, SessionManager sessionManager) {
         this.port = port;
+        this.commandManager = commandManager;
+        this.sessionManager = sessionManager;
     }
 
     void start() throws IOException {
-        log("서버 시작");
-        sessionManager = new SessionManager();
+        log("서버 시작: " + commandManager.getClass());
         serverSocket = new ServerSocket(port);
-        commandManager = new CommandManagerV1(sessionManager);
         log("서버 소켓 시작 - 리스닝 포트: " + port);
 
         addShutdownHook();
+        running();
+    }
 
+    private void running() {
         try {
             while (true) {
                 Socket socket = serverSocket.accept();
@@ -37,7 +40,6 @@ class Server {
         } catch (IOException e) {
             log("서버 소켓 종료: " + e);
         }
-
     }
 
     private void addShutdownHook() {

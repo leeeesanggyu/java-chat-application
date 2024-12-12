@@ -7,7 +7,10 @@ public class ServerMain {
     private static final int PORT = 12345;
 
     public static void main(String[] args) throws IOException {
-        Server server = new Server(PORT);
+        SessionManager sessionManager = new SessionManager();
+        CommandManagerV1 commandManager = new CommandManagerV1(sessionManager);
+
+        Server server = new Server(PORT, commandManager, sessionManager);
         server.start();
     }
 }
