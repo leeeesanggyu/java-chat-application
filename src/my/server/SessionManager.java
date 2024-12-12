@@ -3,7 +3,7 @@ package my.server;
 import java.util.ArrayList;
 import java.util.List;
 
-class SessionManager {
+public class SessionManager {
 
     private List<Session> sessions = new ArrayList<>();
 
@@ -28,7 +28,7 @@ class SessionManager {
         }
     }
 
-    synchronized List<String> getNames() {
+    public synchronized List<String> getNames() {
         return sessions.stream()
                 .map(Session::getName)
                 .toList();

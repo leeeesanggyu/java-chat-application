@@ -8,7 +8,7 @@ import java.net.Socket;
 import static util.Logger.log;
 import static util.SocketCloseUtil.closeAll;
 
-class Session implements Runnable {
+public class Session implements Runnable {
 
     String name = "unknown";
     private boolean closed = false;
@@ -45,7 +45,7 @@ class Session implements Runnable {
         }
     }
 
-    void send(String message) {
+    public void send(String message) {
         try {
             output.writeUTF(message);
         } catch (IOException e) {
@@ -53,15 +53,15 @@ class Session implements Runnable {
         }
     }
 
-    protected void sendAll(String message) {
+    public void sendAll(String message) {
         sessionManager.sendAll(message);
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
-    protected void changeName(String newName) {
+    public void changeName(String newName) {
         this.name = newName;
     }
 
