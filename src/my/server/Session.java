@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.List;
 
 import static util.Logger.log;
 import static util.SocketCloseUtil.closeAll;
@@ -18,13 +17,15 @@ class Session implements Runnable {
     private final DataInputStream input;
     private final DataOutputStream output;
     private final SessionManager sessionManager;
+    private final CommandManager commandManager;
 
-    Session(Socket socket, SessionManager sessionManager) throws IOException {
+    Session(Socket socket, SessionManager sessionManager, CommandManager commandManager) throws IOException {
         this.socket = socket;
         this.input = new DataInputStream(socket.getInputStream());
         this.output = new DataOutputStream(socket.getOutputStream());
         this.sessionManager = sessionManager;
         this.sessionManager.add(this);
+        this.commandManager = commandManager;
     }
 
     @Override
@@ -33,20 +34,7 @@ class Session implements Runnable {
             while (true) {
                 String received = input.readUTF();
                 Command command = Command.of(received);
-                if (command.command() == CommandType.EXIT) {
-                    break;
-                }
-
-                switch (command.command()) {
-                    case CommandType.JOIN -> changeName(command.message());
-                    case CommandType.CHANGE -> changeName(command.message());
-                    case CommandType.USERS -> {
-                        List<String> sessionNames = sessionManager.getNames();
-                        send(String.valueOf(sessionNames));
-                    }
-                    case CommandType.MESSAGE -> sendAll(name + ": " + command.message());
-                    default -> log("message : " + received);
-                }
+                commandManager.execute(command, this);
             }
         } catch (IOException e) {
             log(e);
@@ -65,7 +53,7 @@ class Session implements Runnable {
         }
     }
 
-    private void sendAll(String name) {
+    protected void sendAll(String name) {
         sessionManager.sendAll(name);
     }
 
@@ -73,7 +61,7 @@ class Session implements Runnable {
         return name;
     }
 
-    private void changeName(String newName) {
+    protected void changeName(String newName) {
         this.name = newName;
     }
 
