@@ -33,8 +33,8 @@ class Session implements Runnable {
         try {
             while (true) {
                 String received = input.readUTF();
-                Command command = Command.of(received);
-                commandManager.execute(command, this);
+                Message message = Message.of(received);
+                commandManager.execute(message, this);
             }
         } catch (IOException e) {
             log(e);
