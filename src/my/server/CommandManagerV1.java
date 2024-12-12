@@ -15,18 +15,15 @@ class CommandManagerV1 implements CommandManager {
 
     @Override
     public void execute(Command command, Session session) throws IOException {
-        if (command.command() == CommandType.EXIT) {
-            throw new IOException();
-        }
-
         switch (command.command()) {
+            case EXIT -> throw new IOException();
             case CommandType.JOIN -> session.changeName(command.message());
             case CommandType.CHANGE -> session.changeName(command.message());
             case CommandType.USERS -> {
                 List<String> sessionNames = sessionManager.getNames();
                 session.send(String.valueOf(sessionNames));
             }
-            case CommandType.MESSAGE -> session.sendAll(session.getName() + ": " + command.message());
+            case CommandType.MESSAGE -> session.sendAll("[" + session.getName() + "]: " + command.message());
             default -> log("message : " + command.message());
         }
     }

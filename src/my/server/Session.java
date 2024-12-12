@@ -53,8 +53,8 @@ class Session implements Runnable {
         }
     }
 
-    protected void sendAll(String name) {
-        sessionManager.sendAll(name);
+    protected void sendAll(String message) {
+        sessionManager.sendAll(message);
     }
 
     String getName() {
